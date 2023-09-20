@@ -1,5 +1,5 @@
 """
-Main file to run FASUn on a basic example (DC1)
+Main file to run FastFCLS on a basic example (DC1)
 """
 import argparse
 import os
@@ -7,7 +7,7 @@ import os
 import scipy.io as sio
 
 from src.noise import AdditiveWhiteGaussianNoise as AWGN
-from src.model import FaSUn, SUnShrink
+from src.model import FastFCLS
 from src.metrics import RMSE, SRE
 
 # NOTE Change to use your own data here
@@ -28,8 +28,10 @@ def main(args):
     A_gt = sio.loadmat(os.path.join(DATA_DIR, DATASET, ABUNDANCES))["XT"]
     print(f"A shape => {A_gt.shape}")
 
-    p = args.num_endmembers
-    print(f"Number of endmembers to be found: {p}")
+    r = args.num_endmembers
+    print(f"Number of endmembers to be found: {r}")
+    #E = D[:,1:r+1]
+    E = D
 
     # Apply noise
     noise = AWGN(args.SNR)
@@ -45,39 +47,37 @@ def main(args):
     A_gt = A_gt.reshape(M, N)
 
     # Call model
+    #model = FASUnv3(T=args.iters,
+    #              TA=args.itersA, 
+    #              TB=args.itersB, 
+    #              mu1=abs(args.mu1_S1),
+    #              mu2=abs(args.mu2_S2),
+    #              mu3=abs(args.mu3_S3))
     
-    if args.fasun:
-        print("Using FaSUn...")
-        model = FaSUn(T=args.iters,
-                  TA=args.itersA, 
-                  TB=args.itersB, 
-                  mu1=abs(args.mu1_S1),
-                  mu2=abs(args.mu2_S2),
-                  mu3=abs(args.mu3_S3))
-    
-    else:
-        print("Using SUnShrink...")
-        model = SUnShrink(T=args.iters,
-                      TA=args.itersA,
-                      TB=args.itersB,
-                      mu1=abs(args.mu1_S1),
-                      mu2=abs(args.mu2_S2),
-                      mu3=abs(args.mu3_S3),
-                      lambd=abs(args.lambd),
-                      hard=bool(args.hard),)
-
-    A, B = model.solve(Y, D, p)
+    model = FastFCLS(T=args.iters, 
+                     mu=abs(args.mu1_S1),
+                     )
+    A = model.solve(Y, E)
 
     # NOTE Current A is low rank
     # NOTE Full rank can be obtained as follow
-    A_full = B @ A
+    #A_full = B @ A
     #E= D @ B
     # Compute metrics
     sre = SRE()
     rmse = RMSE()
 
+    # NOTE: Supervised mode needs to be handled differently
+    A_full = A
+    if E.shape[1] != M:
+        A_gt = A_gt[1:r+1]
+
     print(f"SRE => {round(sre(A_full, A_gt), 2)}")
     print(f"RMSE = > {round(rmse(A_full, A_gt), 2)}")
+    #if args.save_results:
+    #    sio.savemat(os.path.join(Result_DIR, DATASET)+"/A.mat",
+    #                {'A':A.transpose(1,0).reshape(H, W, p)})
+    #    sio.savemat(os.path.join(Result_DIR, DATASET)+"/E.mat", {'E':E})
 if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser()
@@ -148,27 +148,6 @@ if __name__ == "__main__":
         "-r",
         "--save_results",
         help="Set to 1 to save results for estimated E and A",
-        type=int,
-        default=0,
-    )
-    parser.add_argument(
-        "-l",
-        "--lambd",
-        help="Regularization parameter",
-        type=float,
-        default=0.1,
-    )
-    parser.add_argument(
-        "-H",
-        "--hard",
-        help="Set to 1 to use hard thresholding",
-        type=int,
-        default=0,
-    )
-    parser.add_argument(
-        "-f",
-        "--fasun",
-        help="Set to 1 to run FaSUn, else SUnShrink",
         type=int,
         default=0,
     )

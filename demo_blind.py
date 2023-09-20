@@ -5,9 +5,10 @@ import argparse
 import os
 
 import scipy.io as sio
+import numpy as np
 
 from src.noise import AdditiveWhiteGaussianNoise as AWGN
-from src.model import FaSUn, SUnShrink
+from src.model import FaSUn
 from src.metrics import RMSE, SRE
 
 # NOTE Change to use your own data here
@@ -28,8 +29,8 @@ def main(args):
     A_gt = sio.loadmat(os.path.join(DATA_DIR, DATASET, ABUNDANCES))["XT"]
     print(f"A shape => {A_gt.shape}")
 
-    p = args.num_endmembers
-    print(f"Number of endmembers to be found: {p}")
+    r = args.num_endmembers
+    print(f"Number of endmembers to be found: {r}")
 
     # Apply noise
     noise = AWGN(args.SNR)
@@ -38,6 +39,10 @@ def main(args):
     N = H * W
     Y = Y.transpose(2, 0, 1).reshape(L, N)
     Y = noise.apply(Y, seed=args.seed)
+    
+    if args.normalize:
+        print("Data l2 normalization...")
+        Y = Y / np.linalg.norm(Y, axis=0, keepdims=True)
     # Reshape ground truth abundances
     M, h, w = A_gt.shape
     assert h == H
@@ -45,33 +50,21 @@ def main(args):
     A_gt = A_gt.reshape(M, N)
 
     # Call model
-    
-    if args.fasun:
-        print("Using FaSUn...")
-        model = FaSUn(T=args.iters,
+    model = FaSUn(T=args.iters,
                   TA=args.itersA, 
                   TB=args.itersB, 
                   mu1=abs(args.mu1_S1),
                   mu2=abs(args.mu2_S2),
                   mu3=abs(args.mu3_S3))
     
-    else:
-        print("Using SUnShrink...")
-        model = SUnShrink(T=args.iters,
-                      TA=args.itersA,
-                      TB=args.itersB,
-                      mu1=abs(args.mu1_S1),
-                      mu2=abs(args.mu2_S2),
-                      mu3=abs(args.mu3_S3),
-                      lambd=abs(args.lambd),
-                      hard=bool(args.hard),)
-
-    A, B = model.solve(Y, D, p)
+    A, B = model.solve(Y, Y, r)
 
     # NOTE Current A is low rank
     # NOTE Full rank can be obtained as follow
-    A_full = B @ A
-    #E= D @ B
+    #A_full = B @ A
+    A_full = A
+    A_gt = A_gt[1:r+1]
+    #E= Y @ B
     # Compute metrics
     sre = SRE()
     rmse = RMSE()
@@ -152,23 +145,9 @@ if __name__ == "__main__":
         default=0,
     )
     parser.add_argument(
-        "-l",
-        "--lambd",
-        help="Regularization parameter",
-        type=float,
-        default=0.1,
-    )
-    parser.add_argument(
-        "-H",
-        "--hard",
-        help="Set to 1 to use hard thresholding",
-        type=int,
-        default=0,
-    )
-    parser.add_argument(
-        "-f",
-        "--fasun",
-        help="Set to 1 to run FaSUn, else SUnShrink",
+        "-n",
+        "--normalize",
+        help="Set to 1 to normalize input data cube",
         type=int,
         default=0,
     )
