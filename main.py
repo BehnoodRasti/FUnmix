@@ -18,17 +18,17 @@ def set_seeds(seed):
 def main(ctx: mlxp.Context) -> None:
 
     cfg = ctx.config
-    mode = cfg.mode
+    mode = cfg.mode.upper()
 
     logging.config.dictConfig(cfg)
 
     log = logging.getLogger(__name__)
     log.debug(f"Config:\n{cfg}")
-    log.info(f"Unmixing mode: {mode.upper()}")
+    log.info(f"Unmixing mode: {mode}")
 
-    if mode == "semi":
+    if mode == "SEMI":
         from src.semisupervised import main as _main
-    elif mode == "supervised":
+    elif mode == "SUPERVISED":
         from src.supervised import main as _main
     else:
         raise ValueError(f"Mode {mode} is invalid")

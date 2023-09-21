@@ -1,0 +1,7 @@
+name: src.model.semisupervised.FaSUn
+mu1: 100
+mu2: 10
+mu3: 1
+TA: 5
+TB: 5
+T: 5000

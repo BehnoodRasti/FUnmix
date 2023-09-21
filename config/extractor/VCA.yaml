@@ -1,0 +1,3 @@
+name: src.model.extractors.VCA
+seed: ${seed}
+snr_input: ${noise.SNR}

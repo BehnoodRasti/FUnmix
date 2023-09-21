@@ -52,10 +52,12 @@ class RandomPixels(BaseExtractor):
 
 
 class VCA(BaseExtractor):
-    def __init__(self):
+    def __init__(self, seed=0, snr_input=None):
         super().__init__()
+        self.seed = seed
+        self.snr_input = 0 if snr_input is None else snr_input
 
-    def extract_endmembers(self, Y, r, seed=0, snr_input=0, *args, **kwargs):
+    def extract_endmembers(self, Y, r, *args, **kwargs):
         """
         Vertex Component Analysis
 
@@ -72,14 +74,13 @@ class VCA(BaseExtractor):
         submited to IEEE Trans. Geosci. Remote Sensing, vol. .., no. .., pp. .-., 2004
         """
         p, n = Y.shape
-        self.seed = seed
         generator = np.random.default_rng(seed=self.seed)
 
         #############################################
         # SNR Estimates
         #############################################
 
-        if snr_input == 0:
+        if self.snr_input == 0:
             y_m = np.mean(Y, axis=1, keepdims=True)
             Y_o = Y - y_m  # data with zero-mean
             Ud = LA.svd(np.dot(Y_o, Y_o.T) / float(n))[0][
@@ -91,7 +92,7 @@ class VCA(BaseExtractor):
 
             logger.info(f"SNR estimated = {SNR}[dB]")
         else:
-            SNR = snr_input
+            SNR = self.snr_input
             logger.info(f"input SNR = {SNR}[dB]\n")
 
         SNR_th = 15 + 10 * np.log10(r)
@@ -104,7 +105,7 @@ class VCA(BaseExtractor):
             logger.info("... Select proj. to R-1")
 
             d = p - 1
-            if snr_input == 0:  # it means that the projection is already computed
+            if self.snr_input == 0:  # it means that the projection is already computed
                 Ud = Ud[:, :d]
             else:
                 y_m = np.mean(Y, axis=1, keepdims=True)
