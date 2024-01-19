@@ -1,0 +1,4 @@
+name: src.data.base.RealHSI
+dataset: Cuprite
+r: 14
+data_dir: ${DATA_dir}

@@ -1,0 +1,37 @@
+seed: 0
+mode: "semi"
+projection: False
+l2_normalization: False
+force_align: False
+
+DATA_dir: "./data/"
+
+defaults:
+  - noise: AWGN
+  - data: DC1
+  - model: FaSUn
+  - extractor: VCA
+  - _self_
+
+###########
+# Logging #
+###########
+version: 1
+formatters:
+  simple:
+    format: "%(asctime)s - %(name)s - [%(levelname)s] - %(message)s"
+    datefmt: "%d-%b-%y %H:%M:%S"
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+loggers:
+  sampleLogger:
+    level: DEBUG
+    handlers: [console]
+    propagate: yes
+root:
+  level: DEBUG
+  handlers: [console]

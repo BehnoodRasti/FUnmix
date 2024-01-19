@@ -1,0 +1,9 @@
+name: src.model.semisupervised.SUnShrink
+mu1: 50
+mu2: 2
+mu3: 1
+TA: 5
+TB: 5
+T: 10000
+lambd: 0.01
+hard: True

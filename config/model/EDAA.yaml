@@ -1,0 +1,5 @@
+name: src.model.semisupervised.EDAA
+T: 100
+K1: 5
+K2: 5
+M: 50
