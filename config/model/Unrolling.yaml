@@ -1,0 +1,9 @@
+name: src.model.semisupervised.UnrolledFCLS
+epochs: 100
+batchsize: 2048
+lr: 0.01
+mu: 1.0
+bias: 0.0
+eta: 1.0
+nblocks: 5
+tied: False

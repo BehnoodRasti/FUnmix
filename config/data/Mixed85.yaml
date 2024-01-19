@@ -1,0 +1,3 @@
+name: src.data.base.HSIWithGT
+dataset: "MixedRatio_rho0.85"
+data_dir: ${DATA_dir}

@@ -1,3 +1,4 @@
+seed: 0
 mode: "semi"
 projection: False
 l2_normalization: False
