@@ -1,5 +1,4 @@
 seed: 0
-mode: "semi"
 projection: False
 l2_normalization: False
 force_align: False
@@ -7,10 +6,8 @@ force_align: False
 DATA_dir: "./data/"
 
 defaults:
-  - noise: AWGN
   - data: DC1
   - model: FaSUn
-  - extractor: VCA
   - _self_
 
 ###########

@@ -16,6 +16,6 @@ version_manager:
   parent_work_dir: ./.workdir
   compute_requirements: false
 use_version_manager: false
-use_scheduler: true
+use_scheduler: false 
 use_logger: true
 interactive_mode: true
