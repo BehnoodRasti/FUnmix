@@ -7,6 +7,7 @@ import logging.config
 
 import mlxp
 
+
 def set_seeds(seed):
     import torch
     import numpy as np
@@ -14,9 +15,9 @@ def set_seeds(seed):
     torch.manual_seed(seed)
     np.random.seed(seed)
 
+
 @mlxp.launch(config_path="./config", seeding_function=set_seeds)
 def main(ctx: mlxp.Context) -> None:
-
     cfg = ctx.config
     logging.config.dictConfig(cfg)
     log = logging.getLogger(__name__)
@@ -29,6 +30,6 @@ def main(ctx: mlxp.Context) -> None:
     except Exception:
         log.error("Exception caught", exc_info=True)
 
+
 if __name__ == "__main__":
     main()
-

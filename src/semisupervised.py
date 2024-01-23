@@ -20,7 +20,7 @@ def main(ctx: mlxp.Context) -> None:
     logger = ctx.logger
 
     # Get noise
-    #noise = _instance_from_config(cfg.noise)
+    # noise = _instance_from_config(cfg.noise)
     noise = AWGN(cfg.SNR)
     # Get HSI
     hsi = _instance_from_config(cfg.data)
@@ -31,8 +31,8 @@ def main(ctx: mlxp.Context) -> None:
     # Get image dimensions
     h, w = hsi.get_img_shape()
     # Clip data
-    #Y[Y <= 0] = 0
-    #Y[Y >= 1] = 1
+    # Y[Y <= 0] = 0
+    # Y[Y >= 1] = 1
     # Apply noise
     Y = noise.apply(Y)
     # L2 normalization

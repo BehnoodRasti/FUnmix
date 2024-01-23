@@ -8,12 +8,14 @@ import torch.nn as nn
 from src.model.base import UnmixingModel
 from src import EPS
 
+
 class SemiSupervisedUnmixingModel(UnmixingModel):
     def __init__(self):
         super().__init__()
 
     def compute_abundances(self, Y, D, r, *args, **kwargs):
         raise NotImplementedError(f"Solver is not implemented for {self}")
+
 
 class FaSUn(SemiSupervisedUnmixingModel):
     def __init__(self, mu1=100, mu2=10, mu3=1, TA=5, TB=5, T=5000):
@@ -23,9 +25,9 @@ class FaSUn(SemiSupervisedUnmixingModel):
         self.mu3 = mu3
         self.TA = TA
         self.TB = TB
-        self.T =T
+        self.T = T
 
-    @torch.no_grad() # NOTE: No gradients needed
+    @torch.no_grad()  # NOTE: No gradients needed
     def compute_abundances(
         self,
         Y,
@@ -34,13 +36,13 @@ class FaSUn(SemiSupervisedUnmixingModel):
         *args,
         **kwargs,
     ):
-        
         # Problem dimensions
         p, n = Y.shape
         m = D.shape[1]
 
         def loss(a, b):
             return 0.5 * ((Y - (D @ b) @ a) ** 2).sum()
+
         # Timing
         tic = time.time()
 
@@ -65,15 +67,15 @@ class FaSUn(SemiSupervisedUnmixingModel):
         L1 = L1.to(self.device)
         L2 = L2.to(self.device)
         L3 = L3.to(self.device)
-        eye_r = torch.eye(r).to(self.device) 
-        eye_m = torch.eye(m).to(self.device) 
-        ones_r = torch.ones(r).to(self.device) 
-        ones_m = torch.ones(m).to(self.device) 
-        ones_n = torch.ones(n).to(self.device) 
+        eye_r = torch.eye(r).to(self.device)
+        eye_m = torch.eye(m).to(self.device)
+        ones_r = torch.ones(r).to(self.device)
+        ones_m = torch.ones(m).to(self.device)
+        ones_n = torch.ones(n).to(self.device)
 
         Q1inv = self.mu3 * D.t() @ D + self.mu2 * eye_m
         Z1 = torch.linalg.solve(Q1inv, ones_m)
-        c1 = -1 / torch.dot(ones_m, Z1) 
+        c1 = -1 / torch.dot(ones_m, Z1)
 
         U1 = eye_m + c1 * torch.outer(Z1, ones_m)
         V1 = c1 * torch.outer(Z1, ones_r)
@@ -84,7 +86,7 @@ class FaSUn(SemiSupervisedUnmixingModel):
         for ii in progress:
             updateloss = loss(A, B)
             progress.set_postfix_str(f"loss={updateloss:.4e}")
-            
+
             Q2inv = self.mu3 * S3.t() @ S3 + self.mu1 * eye_r
             Z2 = torch.linalg.solve(Q2inv, ones_r)
             c2 = -1 / torch.dot(ones_r, Z2)
@@ -94,8 +96,8 @@ class FaSUn(SemiSupervisedUnmixingModel):
             for jj in range(self.TA):
                 WA = S3.t() @ Y + self.mu1 * (S1 - L1)
                 A = U2 @ torch.linalg.solve(Q2inv, WA) - V2
-                S1 = (A + L1)
-                S1[S1<=0] = 0
+                S1 = A + L1
+                S1[S1 <= 0] = 0
                 L1 = L1 + A - S1
 
             Q3inv = A @ A.t() + self.mu3 * eye_r
@@ -103,10 +105,11 @@ class FaSUn(SemiSupervisedUnmixingModel):
             for jj in range(self.TB):
                 WB = self.mu3 * D.t() @ (S3 - L3) + self.mu2 * (S2 - L2)
                 B = U1 @ torch.linalg.solve(Q1inv, WB) - V1
-                S2 = (B + L2)
-                S2[S2<=0] = 0
-                S3 = torch.linalg.solve(Q3inv, Y @ A.t() + self.mu3 * (D @ B + L3),
-                                        left=False)
+                S2 = B + L2
+                S2[S2 <= 0] = 0
+                S3 = torch.linalg.solve(
+                    Q3inv, Y @ A.t() + self.mu3 * (D @ B + L3), left=False
+                )
                 L2 = L2 + B - S2
                 L3 = L3 + D @ B - S3
 
@@ -117,25 +120,37 @@ class FaSUn(SemiSupervisedUnmixingModel):
         B = B.cpu().numpy()
         return A, B
 
+
 class SUnShrink(SemiSupervisedUnmixingModel):
-    def __init__(self, mu1=100, mu2=10, mu3=1, TA=5, TB=5, T=5000,
-                 lambd=0.1, hard=True,):
+    def __init__(
+        self,
+        mu1=100,
+        mu2=10,
+        mu3=1,
+        TA=5,
+        TB=5,
+        T=5000,
+        lambd=0.1,
+        hard=True,
+    ):
         super().__init__()
         self.mu1 = mu1
         self.mu2 = mu2
         self.mu3 = mu3
         self.TA = TA
         self.TB = TB
-        self.T =T
+        self.T = T
         self.lambd = lambd
 
         self.hard = hard
-        self.shrink = (torch.nn.Softshrink(self.lambd / self.mu2) 
-            if not self.hard 
-            else torch.nn.Hardshrink(sqrt(2 * self.lambd / self.mu2)))
+        self.shrink = (
+            torch.nn.Softshrink(self.lambd / self.mu2)
+            if not self.hard
+            else torch.nn.Hardshrink(sqrt(2 * self.lambd / self.mu2))
+        )
         print(f"Using hard thresholding? {self.hard}")
 
-    @torch.no_grad() # NOTE: No gradients needed
+    @torch.no_grad()  # NOTE: No gradients needed
     def compute_abundances(
         self,
         Y,
@@ -144,23 +159,23 @@ class SUnShrink(SemiSupervisedUnmixingModel):
         *args,
         **kwargs,
     ):
-        
         # Problem dimensions
         p, n = Y.shape
         m = D.shape[1]
 
         def loss(a, b):
             penalty = (
-                self.lambd * b.abs().sum() 
-                if not self.hard 
+                self.lambd * b.abs().sum()
+                if not self.hard
                 else self.lambd * b[b.abs() < EPS].sum()
             )
             return 0.5 * ((Y - (D @ b) @ a) ** 2).sum() + penalty
+
         # Timing
         tic = time.time()
 
         A = (1 / r) * torch.ones((r, n))
-        #B = (1 / m) * torch.ones((m, r))
+        # B = (1 / m) * torch.ones((m, r))
         B = torch.zeros((m, r))
         L1 = torch.zeros((r, n))
         L2 = torch.zeros((m, r))
@@ -181,10 +196,10 @@ class SUnShrink(SemiSupervisedUnmixingModel):
         L1 = L1.to(self.device)
         L2 = L2.to(self.device)
         L3 = L3.to(self.device)
-        eye_r = torch.eye(r).to(self.device) 
-        eye_m = torch.eye(m).to(self.device) 
-        ones_r = torch.ones(r).to(self.device) 
-        ones_n = torch.ones(n).to(self.device) 
+        eye_r = torch.eye(r).to(self.device)
+        eye_m = torch.eye(m).to(self.device)
+        ones_r = torch.ones(r).to(self.device)
+        ones_n = torch.ones(n).to(self.device)
 
         Q1inv = self.mu3 * D.t() @ D + self.mu2 * eye_m
 
@@ -194,7 +209,7 @@ class SUnShrink(SemiSupervisedUnmixingModel):
         for ii in progress:
             updateloss = loss(A, B)
             progress.set_postfix_str(f"loss={updateloss:.4e}")
-            
+
             Q2inv = self.mu3 * S3.t() @ S3 + self.mu1 * eye_r
             Z2 = torch.linalg.solve(Q2inv, ones_r)
             c2 = -1 / torch.dot(ones_r, Z2)
@@ -204,22 +219,23 @@ class SUnShrink(SemiSupervisedUnmixingModel):
             for jj in range(self.TA):
                 WA = S3.t() @ Y + self.mu1 * (S1 - L1)
                 A = U2 @ torch.linalg.solve(Q2inv, WA) - V2
-                S1 = (A + L1)
-                S1[S1<=0] = 0
+                S1 = A + L1
+                S1[S1 <= 0] = 0
                 L1 = L1 + A - S1
 
             Q3inv = A @ A.t() + self.mu3 * eye_r
 
             for jj in range(self.TB):
                 WB = self.mu3 * D.t() @ (S3 - L3) + self.mu2 * (S2 - L2)
-                #B = U1 @ torch.linalg.solve(Q1inv, WB) - V1
+                # B = U1 @ torch.linalg.solve(Q1inv, WB) - V1
                 B = torch.linalg.solve(Q1inv, WB)
                 S2 = self.shrink(B + L2)
-                S2[S2<=0] = 0
+                S2[S2 <= 0] = 0
                 # TODO: upper bound?
-                S2[S2>=1] = 1
-                S3 = torch.linalg.solve(Q3inv, Y @ A.t() + self.mu3 * (D @ B + L3),
-                                        left=False)
+                S2[S2 >= 1] = 1
+                S3 = torch.linalg.solve(
+                    Q3inv, Y @ A.t() + self.mu3 * (D @ B + L3), left=False
+                )
                 L2 = L2 + B - S2
                 L3 = L3 + D @ B - S3
 
