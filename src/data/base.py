@@ -16,13 +16,13 @@ log.setLevel(logging.DEBUG)
 
 INTEGER_VALUES = ("h", "w", "m", "p", "r", "n")
 
+
 class HSI:
     def __init__(
         self,
         dataset: str,
         data_dir: str = "./data",
     ) -> None:
-
         # Populate with Null data
         # integers
         self.h = 0
@@ -112,6 +112,7 @@ class HSI:
         msg += f"GlobalMinValue: {self.Y.min()}, GlobalMaxValue: {self.Y.max()}\n"
         return msg
 
+
 class HSIWithGT(HSI):
     def __init__(
         self,
@@ -180,7 +181,6 @@ class RealHSI(HSI):
 
 @dataclass
 class Estimate(Artifact):
-
     ext = ".mat"
 
     def __init__(self, Ehat, Ahat, h, w):

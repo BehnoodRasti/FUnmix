@@ -1,6 +1,4 @@
 *.pyc
 *.ipynb
 .ipynb_checkpoints/
-
-data/
-old_data/
+logs/

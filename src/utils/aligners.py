@@ -14,7 +14,6 @@ logger.setLevel(logging.DEBUG)
 
 class BaseAligner:
     def __init__(self, Aref, criterion):
-
         self.Aref = Aref
         self.criterion = criterion
         self.P = None
@@ -38,7 +37,6 @@ class BaseAligner:
         return E @ self.P.T
 
     def fit_transform(self, A):
-
         self.fit(A)
         res = self.transform(A)
         return res
@@ -53,7 +51,6 @@ class HungarianAligner(BaseAligner):
         super().__init__(**kwargs)
 
     def fit(self, A):
-
         # Computing distance matrix
         self.dists = self.criterion(A.T, self.Aref.T)
 
