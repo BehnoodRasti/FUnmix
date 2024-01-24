@@ -109,5 +109,6 @@ Datasets consist in a dedicated `.mat` file containing the following keys:
 
 You may need to fine-tune the models' parameters for your application. Every method has a dedicated .yaml file located at config/model, which indicates the relevant parameters you can use for fine-tuning. For instance, for FaSUn, the parameters are indicated in config/model/FaSUn.yaml, and we can change the number of iterations for the outer loop (T) with the following line. 
 
+```shell
 python main.py data=DC1 model=FaSUn model.T=12000
-
+```
