@@ -2,7 +2,7 @@ logger:
   name: DefaultLogger
   parent_log_dir: ./logs
   forced_log_id: -1
-  log_streams_to_file: true
+  log_streams_to_file: false
 scheduler:
   name: OARScheduler
   shell_path: /bin/bash
