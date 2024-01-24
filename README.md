@@ -14,8 +14,8 @@ FaSUn (Fast Semissupervised Unmixing):
 ```
 SUnS (Sparse Unmixing Using Soft-Shrinkage):
 ```math
- \hat{\bf X}=\arg\min_{{\bf X}} \frac{1}{2} || {\bf Y}-{\bf DX}||_{F}^{2}+\lambda ||{\bf X}||_1
-~~~{\rm s.t.}~~~{\bf X}\geq 0,{\bf 1}_{m}^{T}{\bf X}={\bf 1}_{n}^{T},
+  (\hat{\bf B},\hat{\bf A})=\arg\min_{{\bf B,A}} \frac{1}{2} || {\bf Y}-{\bf DBA}||_{F}^{2} +\lambda ||{\bf B}||_1 ~~~
+{\rm s.t.}~~~ {\bf A}\geq 0,{\bf 1}_{r}^{T}{\bf A}={\bf 1}_{n}^{T}, 0\leq{\bf B}\leq 1.
 ```
 
 Note: The provided tools can be used for signal and image processing applications beyond unmixing  such as source separation. 
