@@ -7,12 +7,12 @@ Fast Unmixing Using Alternating Method of Multipliers
 
 FUnmix is an open-source Python/PyTorch Package for Semi-supervised hyperspectral unmixing. It contains two algorithms called FaSUn and SUnS to solve the following nonconvex optimizations:
 
-FaSUn:
+FaSUn (Fast Semissupervised Unmixing):
 ```math
   (\hat{\bf B},\hat{\bf A})=\arg\min_{{\bf B,A}} \frac{1}{2} || {\bf Y}-{\bf DBA}||_{F}^{2} 
 {\rm s.t.}{\bf B}\geq 0,{\bf 1}_{m}^{T}{\bf B}={\bf 1}_{r}^{T},  {\rm and }{\bf A}\geq 0,{\bf 1}_{r}^{T}{\bf A}={\bf 1}_{n}^{T}.
 ```
-
+SUnS (Sparse Unmixing Using Soft-Shrinkage):
 ```math
  \hat{\bf X}=\arg\min_{{\bf X}} \frac{1}{2} || {\bf Y}-{\bf DX}||_{F}^{2}+\lambda ||{\bf X}||_1
 ~~~{\rm s.t.}~~~{\bf X}\geq 0,{\bf 1}_{m}^{T}{\bf X}={\bf 1}_{n}^{T},
