@@ -76,15 +76,15 @@ The PyTorch was not included in the requirements.txt. You'll need to separately 
 This toolbox uses [MLXP](https://inria-thoth.github.io/mlxp/) to manage multiple experiments built on top of [hydra](https://hydra.cc/).
 
 There are a few required parameters to define in order to run an experiment:
-* `mode`: unmixing mode 
-* `data`: hyperspectral unmixing dataset (DC1, DC2, and DC3)
+
+* `data`: hyperspectral unmixing dataset (DC1, DC2, MR70, MR85, and MR100)
 * `model`: unmixing model (FaSUn or SUnS)
-* `noise.SNR`: input SNR (*optional*)
+* `SNR`: input SNR (*optional*)
 
 An example of a corresponding command line is simply:
 
 ```shell
-python main.py mode=semi data=DC1 model=FaSUn
+python main.py data=DC1 model=FaSUn
 ```
 
 ## Data
@@ -94,24 +94,20 @@ python main.py mode=semi data=DC1 model=FaSUn
 Datasets consist in a dedicated `.mat` file containing the following keys:
 
 * `Y`: original hyperspectral image (dimension `p` x `n`)
-* `E`: ground truth endmembers (dimension `p` x `r`)
+* `D`: endmembers library (dimension `p` x `m`)
 * `A`: ground truth abundances (dimension `r` x `n`)
 * `h`: HSI number of rows
 * `w`: HSI number of columns
 * `r`: number of endmembers
 * `p`: number of channels
 * `n`: number of pixels (`n` == `h`*`w`)
-
-For sparse unmixing, a dictionary `D` containing `m` atoms is required.
-
-* `D`: endmembers library (dimension `p` x `m`)
 * `m`: number of atoms
 
 ## Parameter Tuning
 
 ### Fine Tuning
 
-You may need to fine-tune the models' parameters for your application. Every method has a dedicated .yaml file located at config/model, which indicates the relevant parameters you can use for fine-tuning. For instance, for SUnCNN, the parameters are indicated in config/model/SUnCNN.yaml, and we can change the number of iterations and the input of the CNN with the following line. 
+You may need to fine-tune the models' parameters for your application. Every method has a dedicated .yaml file located at config/model, which indicates the relevant parameters you can use for fine-tuning. For instance, for FaSUn, the parameters are indicated in config/model/FaSUn.yaml, and we can change the number of iterations for the outer loop (T) with the following line. 
 
-python unmixing.py mode=semi data=DC1 model=SUnCNN projection=True model.niters=8000 model.noisy_input=False noise.SNR=30
+python main.py data=DC1 model=FaSUn model.T=12000
 
