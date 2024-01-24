@@ -84,7 +84,7 @@ There are a few required parameters to define in order to run an experiment:
 An example of a corresponding command line is simply:
 
 ```shell
-python main.py mode=semi data=DC1 model=SUnCNN 
+python main.py mode=semi data=DC1 model=FaSUn
 ```
 
 ## Data
@@ -93,21 +93,19 @@ python main.py mode=semi data=DC1 model=SUnCNN
 
 Datasets consist in a dedicated `.mat` file containing the following keys:
 
-* `Y`: original hyperspectral image (dimension `L` x `N`)
-* `E`: ground truth endmembers (dimension `L` x `p`)
-* `A`: ground truth abundances (dimension `p` x `N`)
-* `H`: HSI number of rows
-* `W`: HSI number of columns
-* `p`: number of endmembers
-* `L`: number of channels
-* `N`: number of pixels (`N` == `H`*`W`)
+* `Y`: original hyperspectral image (dimension `p` x `n`)
+* `E`: ground truth endmembers (dimension `p` x `r`)
+* `A`: ground truth abundances (dimension `r` x `n`)
+* `h`: HSI number of rows
+* `w`: HSI number of columns
+* `r`: number of endmembers
+* `p`: number of channels
+* `n`: number of pixels (`n` == `h`*`w`)
 
-For sparse unmixing, a dictionary `D` containing `M` atoms is required.
+For sparse unmixing, a dictionary `D` containing `m` atoms is required.
 
-* `D`: endmembers library (dimension `L` x `M`)
-* `M`: number of atoms
-
-We provide a utility script to turn any existing datasets composed of separated files to fit the required format used throughout the toolbox (See `utils/bundle_data.py`).
+* `D`: endmembers library (dimension `p` x `m`)
+* `m`: number of atoms
 
 ## Parameter Tuning
 
