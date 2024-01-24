@@ -87,7 +87,7 @@ An example of a corresponding command line is simply:
 python main.py data=DC1 model=FaSUn
 ```
 
-Advanced Note: 
+## Advanced Note: 
 
 If you set +mlxp.logger.log_streams_to_file=True as below, you get the information for your configurations saved into log.stderr and log.stdout instead of printing in the console. 
 
