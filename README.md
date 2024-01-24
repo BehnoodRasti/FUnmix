@@ -11,7 +11,7 @@ FaSUn:
 
 $(\hat{\bf B},\hat{\bf A})=\arg\min_{{\bf B,A}} \frac{1}{2} || {\bf Y}-{\bf DBA}||_{F}^{2}$ s.t. 
 
-$'{\bf B}\geq 0,{\bf 1}_{m}^{T}{\bf B}={\bf 1}_{r}^{T}'$  
+${\bf B}\geq 0$ ,{\bf 1}_{m}^{T}{\bf B}={\bf 1}_{r}^{T}$  
 
 ${\rm and }{\bf A}\geq 0,{\bf 1}_{r}^{T}{\bf A}={\bf 1}_{n}^{T}$
 
