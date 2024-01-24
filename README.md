@@ -14,8 +14,9 @@ $(\hat{\bf B},\hat{\bf A})=\arg\min_{{\bf B,A}} \frac{1}{2} || {\bf Y}-{\bf DBA}
 
 ${\bf B}\geq 0 , {\bf 1}_{m}$^{T}$ ${\bf B}={\bf 1}_{r}^{T}$  
 
-${\rm and }{\bf A}\geq 0,{\bf 1}_{r}^{T}{\bf A}={\bf 1}_{n}^{T}$
-
+```math
+{\rm and }{\bf A}\geq 0,{\bf 1}_{r}^{T}{\bf A}={\bf 1}_{n}^{T}
+```
 ## HySUPP key numbers
 
 * 3 unmixing categories
