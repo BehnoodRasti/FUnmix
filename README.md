@@ -1,5 +1,5 @@
 # FUnmix
-Fast Unmixing Using Alternating Method of Multipliers 
+Fast Unmixing Using Alternating Direction Method of Multipliers 
 
 ---
 
