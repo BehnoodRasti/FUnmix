@@ -33,7 +33,7 @@ FUnmix is distributed under MIT license.
 
 ## Citing FUnmix
 
-Rasti, B., Zouaoui, A., Mairal, J., & Chanussot, J. (2024). Fast Semi-supervised Unmixing using Non-convex Optimization. [ArXiv. /abs/2308.09375](https://arxiv.org/abs/2401.12609)
+B. Rasti, A. Zouaoui, J. Mairal and J. Chanussot, "Fast Semisupervised Unmixing Using Nonconvex Optimization," in IEEE Transactions on Geoscience and Remote Sensing, vol. 62, pp. 1-13, 2024, Art no. 5526713, doi: 10.1109/TGRS.2024.3440663.
 
 ## Installation
 
